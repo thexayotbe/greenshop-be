@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { Wrapper } from "../Login/style";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { notification } from "antd";
 import { switchAuthModalVisibility } from "../../../redux/modalSlice";
 import { LoadingOutlined } from "@ant-design/icons";
-
+import axios from "axios";
 const SignIn = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [userData, setUserData] = useState({});
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -33,11 +35,19 @@ const SignIn = () => {
     setLoading(true);
     let dataStatus = Object.values(userData).every((value) => value);
     if (userData.password === confirmPassword && dataStatus) {
-      setTimeout(() => {
-        openNotifications("success");
-        dispatch(switchAuthModalVisibility());
-        setLoading(false);
-      }, 3000);
+      axios
+        .post(`http://localhost:8080/auth/register`, userData)
+        .then((response) => {
+          dispatch(switchAuthModalVisibility());
+          navigate("/home");
+          openNotifications("success");
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.log(error);
+          setLoading(false);
+          openNotifications("error");
+        });
     } else {
       setLoading(false);
       setIsError(true);
@@ -50,23 +60,23 @@ const SignIn = () => {
       <Wrapper.Title>Enter your email and password to register.</Wrapper.Title>
       <Wrapper.Input
         placeholder={"First Name"}
-        name={"firstName"}
+        name={"name"}
         onChange={getUserDate}
-        value={userData.firstName}
+        value={userData.name}
         error={isError ? "true" : undefined}
       />
       <Wrapper.Input
         placeholder={"Last Name"}
-        name={"lastName"}
+        name={"surname"}
         onChange={getUserDate}
-        value={userData.lastName}
+        value={userData.surname}
         error={isError ? "true" : undefined}
       />
       <Wrapper.Input
         placeholder={"Username"}
-        name={"userName"}
+        name={"username"}
         onChange={getUserDate}
-        value={userData.userName}
+        value={userData.username}
         error={isError ? "true" : undefined}
       />
 

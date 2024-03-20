@@ -8,7 +8,7 @@ import search from "../../assets/icons/search.svg";
 import { Outlet, useNavigate } from "react-router-dom";
 import { Container } from "../Generic/styles";
 import { Badge, Modal } from "antd";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { switchAuthModalVisibility } from "../../redux/modalSlice";
 import { UserOutlined } from "@ant-design/icons";
 import Links from "./Links";

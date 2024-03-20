@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Wrapper } from "./style";
 import { useDispatch } from "react-redux";
 import { switchAuthModalVisibility } from "../../../redux/modalSlice";
