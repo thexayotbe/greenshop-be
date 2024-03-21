@@ -82,7 +82,7 @@ const SignIn = () => {
 
       <Wrapper.Input
         placeholder={"Enter your email address"}
-        autoComplete={"username"}
+        autoComplete={"emai"}
         name={"email"}
         onChange={getUserDate}
         value={userData.email}

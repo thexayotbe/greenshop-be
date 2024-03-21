@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 import { Wrapper } from "./style";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { switchAuthModalVisibility } from "../../../redux/modalSlice";
 import { notification } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
+import axios from "axios";
 const LogIn = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [userData, setUserData] = useState({
-    userName: "",
+    email: "",
     password: "",
   });
   const getUserData = (e) => {
@@ -29,37 +32,33 @@ const LogIn = () => {
 
   const checkHandler = () => {
     setLoading(true);
-    if (userData.userName && userData.password) {
-      const localStorageUsers =
-        JSON.parse(localStorage.getItem("userData")) || [];
-      const foundData = localStorageUsers.find(
-        (value) =>
-          value.email === userData.userName &&
-          value.password === userData.password,
-      );
-      setTimeout(() => {
-        if (foundData) {
+
+    if (userData.email && userData.password) {
+      axios
+        .post(`http://localhost:8080/auth/login`, userData)
+        .then((response) => {
           dispatch(switchAuthModalVisibility());
+          navigate("/home");
           openNotifications("success");
-        } else {
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.log(error);
+          setLoading(false);
           openNotifications("error");
-          setIsError(true);
-        }
-        setLoading(false);
-      }, 3000);
+        });
     } else {
-      setIsError(true);
       openNotifications("error");
-      setLoading(false);
+      setIsError(true);
     }
   };
   return (
     <Wrapper>
       <Wrapper.Title>Enter your username and password to login.</Wrapper.Title>
       <Wrapper.Input
-        placeholder={"Email or username"}
-        name={"userName"}
-        autoComplete={"username"}
+        placeholder={"Email"}
+        name={"email"}
+        autoComplete={"email"}
         onChange={getUserData}
         error={isError ? "true" : undefined}
       />
