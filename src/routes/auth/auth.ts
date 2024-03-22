@@ -6,11 +6,11 @@ import { hashPassword, comparePassword } from "../../controllers/auth_user";
 import { password_incorrect, userNotFound } from "../../controllers/messages";
 import { bodyRequirer } from "../../controllers/body_require";
 import { sign_in_required_values } from "../../controllers/required_values";
+import passport from "passport";
 
 router.post("/login", async ({ body }: Request, res: Response) => {
   try {
     await bodyRequirer({ body, requiredValue: sign_in_required_values });
-
     const data = await user.findOne({
       email: body.email,
     });
@@ -66,5 +66,17 @@ router.post("/register", async ({ body }: Request, res: Response) => {
     return res.status(500).json(error);
   }
 });
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] }),
+);
+
+router.get(
+  "/google/callback",
+  passport.authenticate("google", { failureRedirect: "/login" }),
+  (req, res) => {
+    res.redirect("/");
+  },
+);
 
 export default router;
