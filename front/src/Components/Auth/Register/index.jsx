@@ -58,20 +58,7 @@ const SignIn = () => {
   return (
     <Wrapper>
       <Wrapper.Title>Enter your email and password to register.</Wrapper.Title>
-      <Wrapper.Input
-        placeholder={"First Name"}
-        name={"name"}
-        onChange={getUserDate}
-        value={userData.name}
-        error={isError ? "true" : undefined}
-      />
-      <Wrapper.Input
-        placeholder={"Last Name"}
-        name={"surname"}
-        onChange={getUserDate}
-        value={userData.surname}
-        error={isError ? "true" : undefined}
-      />
+
       <Wrapper.Input
         placeholder={"Username"}
         name={"username"}

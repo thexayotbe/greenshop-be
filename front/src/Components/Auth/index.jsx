@@ -7,10 +7,14 @@ import facebook from "../../assets/icons/facebook-color.svg";
 import close from "../../assets/icons/close.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { switchAuthModalVisibility } from "../../redux/modalSlice";
+import axios from "axios";
 const AuthSection = () => {
   const dispatch = useDispatch();
   const [activeSection, setActiveSection] = useState("login");
   const { authModalVisibility } = useSelector((state) => state.modal);
+  const authGoogle = () => {
+    axios.get("http://localhost:8080/auth/login/google");
+  };
   return (
     <Wrapper>
       <Wrapper.Modal open={authModalVisibility}>
@@ -41,7 +45,7 @@ const AuthSection = () => {
           <Wrapper.Line></Wrapper.Line>
         </Wrapper.Divider>
 
-        <Wrapper.SocialAuth>
+        <Wrapper.SocialAuth onClick={authGoogle}>
           <Wrapper.SocialIcon alt="" src={google} />
           Continue with google
         </Wrapper.SocialAuth>

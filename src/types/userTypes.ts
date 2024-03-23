@@ -1,0 +1,17 @@
+import { Types } from "mongoose";
+
+export interface IGoogleUser {
+  id: string;
+  email: string;
+  verified_email: boolean;
+  name: string;
+  given_name: string;
+  family_name: string;
+  picture: string;
+  locale: string;
+}
+export interface IUser extends Types.ObjectId {
+  email: string;
+  username: string;
+  password?: string;
+}

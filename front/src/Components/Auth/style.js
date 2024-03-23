@@ -85,6 +85,7 @@ Wrapper.SocialAuth = styled.div`
   color: #727272;
   gap: 10px;
   margin-bottom: 15px;
+  cursor: pointer;
 `;
 Wrapper.SocialIcon = styled.img``;
 export { Wrapper };

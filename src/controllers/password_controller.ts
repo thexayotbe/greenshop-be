@@ -10,8 +10,21 @@ const comparePassword = async (
   password: string,
   hashedPassword: string,
 ): Promise<boolean> => {
-  const isMatch = await bcrypt.compare(password, hashedPassword);
-  return isMatch;
+  try {
+    // Compare the user's password with the stored hashed password
+    const match: boolean = await bcrypt.compare(password, hashedPassword);
+
+    if (match) {
+      // Passwords match
+      return true;
+    } else {
+      // Passwords don't match
+      return false;
+    }
+  } catch (error) {
+    // Handle error
+    return false;
+  }
 };
 
 export { hashPassword, comparePassword };

@@ -1,26 +1,25 @@
 const { Schema, mongoose } = require("mongoose");
-
+import validator from "validator";
 const user_model = new Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  surname: {
-    type: String,
-    required: true,
-  },
   password: {
     type: String,
-    required: true,
+    required: [true, "Please provide us password!"],
+    minLength: [8, "Password should have 8 characters!"],
+    select: false,
   },
   username: {
     type: String,
     default: "",
     unique: true,
+    trim: true,
   },
   email: {
     type: String,
-    required: true,
+    require: [true, "Email is required!"],
+    unique: true,
+    trim: true,
+    lowercase: true,
+    validate: [validator.isEmail, "Please provide us valid email!"],
   },
 });
 
