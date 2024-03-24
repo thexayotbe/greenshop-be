@@ -1,8 +1,8 @@
 import axios from "axios";
 import { Response } from "express";
 import querystring from "querystring";
-import { IRequest } from "../types/requestTypes";
 import { IGoogleUser } from "../types/userTypes";
+import queryStringify from "../utils/queryStringify";
 const consent_rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
 
 export default {
@@ -60,5 +60,45 @@ export default {
         return res.redirect(`http://localhost:3000?error=${error.message}`);
       });
     return response?.data;
+  },
+  facebookSetUp: (res: Response) => {
+    const options = {
+      client_id: process.env.FACEBOOK_APP_ID,
+      redirect_uri: process.env.FACEBOOK_REDIRECT_URI,
+      scope: "email",
+    };
+    const url = `https://www.facebook.com/v13.0/dialog/oauth?${queryStringify(
+      options,
+    )}`;
+    return res.redirect(url);
+  },
+  facebookGetToken: async (code: string) => {
+    const values = {
+      code,
+      client_id: process.env.FACEBOOK_APP_ID,
+      client_secret: process.env.FACEBOOK_APP_SECRET,
+      redirect_uri: process.env.FACEBOOK_REDIRECT_URI,
+    };
+    return await axios.get(
+      `https://graph.facebook.com/v13.0/oauth/access_token?${queryStringify(
+        values,
+      )}`,
+      {
+        headers: {
+          "content-type": "application/x-www-form-urlencoded",
+        },
+      },
+    );
+  },
+  facebookGetUser: async (access_token: string, res: Response) => {
+    const response = await axios
+      .get(
+        `https://graph.facebook.com/v13.0/me?fields=name,email&access_token=${access_token}`,
+      )
+      .then((res) => res.data)
+      .catch((error: any) =>
+        res.redirect(`http://localhost:3000?error=${error.message}`),
+      );
+    return response;
   },
 };

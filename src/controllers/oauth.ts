@@ -2,10 +2,9 @@ import { CookieOptions, Request, Response, Router } from "express";
 import { user as UserModel } from "../models/userModel";
 import jwt from "../services/jwt";
 import oauth from "../services/oauth";
-import { v4 } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import { IUser } from "../types/userTypes";
 import queryStringify from "../utils/queryStringify";
-
 const tokenCreate = (user: IUser, res: Response) => {
   const tokenPayload = {
     username: user.username,
@@ -46,7 +45,7 @@ const callbackGoogle = async (req: Request, res: Response) => {
   let user = await UserModel.findOne({ email: googleUser.email });
 
   if (!user) {
-    const newPassword = v4().slice(0, 8);
+    const newPassword = uuidv4().slice(0, 8);
 
     user = await UserModel.create({
       email: googleUser.email,
@@ -57,5 +56,30 @@ const callbackGoogle = async (req: Request, res: Response) => {
   }
   tokenCreate(user, res);
 };
+const loginFacebookController = (req: Request, res: Response) => {
+  return oauth.facebookSetUp(res);
+};
 
-export { loginGoogleController, callbackGoogle };
+const facebookCallbackController = async (req: Request, res: Response) => {
+  const { code } = req.query;
+  const data: any = await oauth.facebookGetToken(String(code));
+  const faceBookUser = await oauth.facebookGetUser(data.access_token, res);
+  let user = await UserModel.findOne({ email: faceBookUser.email });
+  if (!user) {
+    const newPassword = uuidv4().slice(0, 8);
+    user = await UserModel.create({
+      email: faceBookUser.email,
+      username: faceBookUser.given_name,
+      password: newPassword,
+      passwordConfirm: newPassword,
+    });
+  }
+  tokenCreate(user, res);
+};
+
+export {
+  loginGoogleController,
+  callbackGoogle,
+  loginFacebookController,
+  facebookCallbackController,
+};
