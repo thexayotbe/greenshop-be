@@ -46,7 +46,6 @@ const callbackGoogle = async (req: Request, res: Response) => {
 
   if (!user) {
     const newPassword = uuidv4().slice(0, 8);
-
     user = await UserModel.create({
       email: googleUser.email,
       username: googleUser.given_name,
