@@ -2,7 +2,7 @@ import { CookieOptions, Request, Response } from "express";
 import { user as UserModel } from "../models/userModel";
 import jwt from "../services/jwt";
 import { hashPassword, comparePassword } from "./password_controller";
-// import { password_incorrect, userNotFound } from "./messages";
+import { password_incorrect, userNotFound } from "./messages";
 import { bodyRequirer } from "./body_require";
 import {
   sign_in_required_values,

@@ -13,16 +13,16 @@ const AuthSection = () => {
   const [activeSection, setActiveSection] = useState("login");
   const { authModalVisibility } = useSelector((state) => state.modal);
   const authGoogle = () => {
-    window.open("https://localhost:8080/auth/login/google", " _blank");
+    window.open("http://localhost:8080/auth/google", "_self");
 
-    axios
-      .get("https://localhost:8080/auth/login/google")
-      .then((response) => {
-        console.log(22);
-      })
-      .catch((error) => {
-        console.error("Error11:", error.message);
-      });
+    // axios
+    //   .get("https://localhost:8080/auth/login/google")
+    //   .then((response) => {
+    //     console.log(response);
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error11:", error.message);
+    //   });
   };
   return (
     <Wrapper>
