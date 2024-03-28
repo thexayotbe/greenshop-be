@@ -13,7 +13,7 @@ const AuthSection = () => {
   const [activeSection, setActiveSection] = useState("login");
   const { authModalVisibility } = useSelector((state) => state.modal);
   const authGoogle = () => {
-    window.open("http://localhost:8080/auth/google", "_self");
+    window.open("http://localhost:8080/auth/login/google", "_self");
 
     // axios
     //   .get("https://localhost:8080/auth/login/google")

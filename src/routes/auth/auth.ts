@@ -29,15 +29,22 @@ router.get("/login/success", (req, res) => {
     });
 });
 
-router.get("/google", passport.authenticate(`google`, { scope: ["profile"] }));
+// router.get(
+//   "/login/google",
+//   passport.authenticate(`google`, { scope: ["profile"] }),
+// );
 
-router.get(
-  "/google/callback",
-  passport.authenticate("google", {
-    successRedirect: "http://localhost:3000/",
-    failureRedirect: "/login/failure",
-  }),
-);
+// router.get(
+//   "/google/callback",
+//   passport.authenticate("google", {
+//     successRedirect: "http://localhost:3000/",
+//     failureRedirect: "/login/failure",
+//   }),
+// );
+
+router.get("/login/google", loginGoogleController);
+router.get("/google/callback", callbackGoogle);
+
 router.get("/login/facebook", loginFacebookController);
 router.get("/facebook/callback", facebookCallbackController);
 export default router;
