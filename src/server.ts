@@ -6,6 +6,7 @@ import router from "./routes";
 import mongoose from "mongoose";
 import cookieSeccion from "cookie-session";
 import passport from "passport";
+import cookieParser from "cookie-parser";
 nodenv.config();
 
 const app: Application = express();
@@ -14,6 +15,7 @@ const app: Application = express();
 app.use(router);
 app.use(express.urlencoded());
 app.use(express.json());
+
 app.use(
   cors({
     origin: "http://localhost:3000",
@@ -34,6 +36,8 @@ app.use(
     maxAge: 100 * 60 * 60 * 24 * 3,
   }),
 );
+app.use(cookieParser(String(process.env.SECRET_KEY)));
+
 app.use(passport.initialize());
 app.use(passport.session());
 

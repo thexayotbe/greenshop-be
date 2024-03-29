@@ -44,8 +44,6 @@ export default {
     id_token: string;
     res: Response;
   }) => {
-    console.log("accesstoken", access_token);
-    console.log("idtoken", id_token);
     const response = await axios
       .get<IGoogleUser>(
         `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`,
