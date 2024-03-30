@@ -19,7 +19,6 @@ const tokenCreate = (user: IUser, res: Response) => {
       Date.now() + Number(process.env.JWT_COOKIE_EXPIRES_IN) * 24 * 3600 * 1000,
     ),
     secure: false,
-    // signed: true,
   };
   res.cookie("token", token, cookieOptions);
   user.password = undefined;
