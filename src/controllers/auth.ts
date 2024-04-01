@@ -37,8 +37,6 @@ const createAndSendToken = (
 // <------ Login  ------->
 
 const loginController = async ({ body }: Request, res: Response) => {
-  console.log(21);
-
   try {
     await bodyRequirer({ body, requiredValue: sign_in_required_values });
     const user = await UserModel.findOne({
@@ -49,7 +47,7 @@ const loginController = async ({ body }: Request, res: Response) => {
     if (user.length) res.status(401).json(userNotFound);
 
     // if (!pwCheck) res.status(401).json(password_incorrect);
-
+    //
     return createAndSendToken(user, 200, res);
   } catch (error) {
     res.status(500).json(error);

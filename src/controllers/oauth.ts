@@ -22,7 +22,6 @@ const tokenCreate = (user: IUser, res: Response) => {
   };
   res.cookie("token", token, cookieOptions);
   user.password = undefined;
-
   res.redirect(`http://localhost:3000?${queryStringify({ token })}`);
 };
 

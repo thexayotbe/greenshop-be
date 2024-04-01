@@ -75,6 +75,14 @@ const SignIn = () => {
         value={userData.email}
         error={isError ? "true" : undefined}
       />
+      <Wrapper.Input
+        placeholder={"Email confirmation"}
+        autoComplete={"emai"}
+        name={"email"}
+        onChange={getUserDate}
+        value={userData.email}
+        error={isError ? "true" : undefined}
+      />
       <Wrapper.InputPassword
         placeholder={"Password"}
         autoComplete="current-password"
