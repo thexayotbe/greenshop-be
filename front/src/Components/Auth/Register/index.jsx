@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Wrapper } from "../Login/style";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { notification } from "antd";
+import { notification, Space, Input, Button } from "antd";
 import { switchAuthModalVisibility } from "../../../redux/modalSlice";
 import { LoadingOutlined } from "@ant-design/icons";
 import axios from "axios";
@@ -75,14 +75,18 @@ const SignIn = () => {
         value={userData.email}
         error={isError ? "true" : undefined}
       />
-      <Wrapper.Input
+      {/* <Wrapper.Input
         placeholder={"Email confirmation"}
         autoComplete={"emai"}
         name={"email"}
         onChange={getUserDate}
         value={userData.email}
         error={isError ? "true" : undefined}
-      />
+      /> */}
+      <Space.Compact style={{ width: "100%" }}>
+        <Wrapper.Input placeholder="Email verification" />
+        <Wrapper.SendCode type="primary">Send Code</Wrapper.SendCode>
+      </Space.Compact>
       <Wrapper.InputPassword
         placeholder={"Password"}
         autoComplete="current-password"

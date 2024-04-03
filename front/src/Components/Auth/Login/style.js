@@ -37,6 +37,7 @@ Wrapper.InputPassword = styled(Input.Password)`
     border: 1px solid #46a358;
   }
 `;
+
 Wrapper.Forgot = styled.p`
   font-style: normal;
   font-weight: 400;
@@ -58,6 +59,24 @@ Wrapper.Button = styled.button`
   border: none;
   margin-top: 30px;
   transition: ease-in-out 0.4s;
+  :hover {
+    border: 1px solid #46a358;
+    background-color: #fff;
+    color: #46a358;
+  }
+`;
+Wrapper.SendCode = styled.button`
+  width: 200px;
+  height: 40px;
+  border: 1px solid ${({ error }) => (error ? "red" : "#eaeaea")};
+  border-radius: 0 5px 5px 0;
+  background: #46a358;
+  cursor: pointer;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 16px;
+  color: #ffffff;
   :hover {
     border: 1px solid #46a358;
     background-color: #fff;

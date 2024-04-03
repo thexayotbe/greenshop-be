@@ -67,6 +67,7 @@ const registerController = async ({ body }: Request, res: Response) => {
       email: body.email,
       username: body.username,
     });
+
     createAndSendToken(created_user, 201, res);
   } catch (error) {
     return res.status(500).json(error);
