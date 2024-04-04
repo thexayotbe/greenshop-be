@@ -1,16 +1,30 @@
-const { Schema, mongoose } = require("mongoose");
+import mongoose, { Schema, Types } from "mongoose";
 import validator from "validator";
+import crypto from "crypto";
+import bcrypt from "bcrypt";
+export interface IUser extends Types.ObjectId {
+  email: string;
+  username: string;
+  password: string;
+  passwordConfirm: string;
+  phoneNumber?: string;
+  firstName: string;
+  lastName: string;
+  avatarUrl: string;
+  active?: boolean;
+  verificationExpiresDate: string;
+  verificationToken: string;
+  correctPassword(
+    candidatePassword: string,
+    userPassword: string,
+  ): Promise<boolean>;
+  createVerificationToken(): Promise<string>;
+}
+
 const user_model = new Schema({
-  password: {
-    type: String,
-    required: [true, "Please provide us password!"],
-    minLength: [8, "Password should have 8 characters!"],
-    select: false,
-  },
   username: {
     type: String,
-    default: "",
-    unique: true,
+    required: [true, "Username is required!"],
     trim: true,
   },
   email: {
@@ -21,8 +35,83 @@ const user_model = new Schema({
     lowercase: true,
     validate: [validator.isEmail, "Please provide us valid email!"],
   },
+  phoneNumber: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+  firstName: {
+    type: String,
+    trim: true,
+  },
+  lastName: {
+    type: String,
+    trim: true,
+  },
+  avatarUrl: {
+    type: String,
+    trim: true,
+  },
+  password: {
+    type: String,
+    required: [true, "Please provide us password!"],
+    minLength: [8, "Password should have 8 characters!"],
+    select: false,
+  },
+  passwordConfirm: {
+    type: String,
+    required: [true, "Please confirm password!"],
+    validate: {
+      validator: function (this: IUser, val: String): boolean {
+        return val == this.password;
+      },
+      message: "Passwords are not same!",
+    },
+  },
+  verificationToken: {
+    type: String,
+    select: false,
+    required: false,
+  },
+  verificationExpireDate: {
+    type: String,
+    select: false,
+    required: false,
+  },
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
+});
+user_model.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  if (this.password) {
+    this.password = await bcrypt.hash(this.password, 12);
+  }
+  // this.passwordConfirm = undefined;
+  next();
 });
 
-const user = mongoose.model("users", user_model);
+user_model.methods.correctPassword = async function (
+  candidatePassword: string,
+  userPassword: string,
+): Promise<boolean> {
+  return bcrypt.compare(candidatePassword, userPassword);
+};
 
-export { user };
+user_model.methods.createVerificationToken = async function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  this.verification = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+  this.verificationExpiresDate = Date.now() + 10 * 60 * 1000;
+
+  console.log("this in createVerificationToken", this);
+  console.log({ resetToken }, this.verificationToken);
+  return resetToken;
+};
+
+export default mongoose.model<IUser>("user", user_model);

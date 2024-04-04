@@ -54,7 +54,9 @@ const SignIn = () => {
       openNotifications("error");
     }
   };
-
+  const emailVerification = () => {
+    console.log(22);
+  };
   return (
     <Wrapper>
       <Wrapper.Title>Enter your email and password to register.</Wrapper.Title>
@@ -85,7 +87,9 @@ const SignIn = () => {
       /> */}
       <Space.Compact style={{ width: "100%" }}>
         <Wrapper.Input placeholder="Email verification" />
-        <Wrapper.SendCode type="primary">Send Code</Wrapper.SendCode>
+        <Wrapper.SendCode type="primary" onClick={emailVerification}>
+          Send Code
+        </Wrapper.SendCode>
       </Space.Compact>
       <Wrapper.InputPassword
         placeholder={"Password"}
