@@ -1,5 +1,5 @@
-import { CookieOptions, Request, Response } from "express";
-import { user as UserModel } from "../models/userModel";
+import { CookieOptions, NextFunction, Request, Response } from "express";
+import User from "../models/userModel";
 import jwt from "../services/jwt";
 import { IUser } from "../types/userTypes";
 import { bodyRequirer } from "./body_require";
@@ -9,6 +9,9 @@ import {
   sign_in_required_values,
   sign_up_required_values,
 } from "./required_values";
+import catchAsync from "../utils/catchAsync";
+import AppError from "../utils/appError";
+import unVerifiedUserModal from "../models/unVerifiedUserModal";
 
 const createAndSendToken = (
   user: IUser,
@@ -36,42 +39,81 @@ const createAndSendToken = (
 
 // <------ Login  ------->
 
-const loginController = async ({ body }: Request, res: Response) => {
-  try {
-    await bodyRequirer({ body, requiredValue: sign_in_required_values });
-    const user = await UserModel.findOne({
-      email: body.email,
-    });
-    console.log(user);
-    // const pwCheck = await comparePassword(body.password, user.password);
-    if (user.length) res.status(401).json(userNotFound);
+// const loginController = async (
+//   { body }: Request,
+//   res: Response,
+//   next: NextFunction,
+// ) => {
+//   const { email, password } = body;
+//   try {
+//     await bodyRequirer({ body, requiredValue: sign_in_required_values });
+//     const user = await UserModel.findOne({
+//       email: body.email,
+//     });
+//     console.log(user);
+//     // const pwCheck = await comparePassword(body.password, user.password);
+//     if (UserModel.length) res.status(401).json(userNotFound);
 
-    // if (!pwCheck) res.status(401).json(password_incorrect);
-    //
-    return createAndSendToken(user, 200, res);
-  } catch (error) {
-    res.status(500).json(error);
-  }
-};
+//     // if (!pwCheck) res.status(401).json(password_incorrect);
+//     //
+//     return createAndSendToken(UserModel, 200, res);
+//   } catch (error) {
+//     res.status(500).json(error);
+//   }
+// };
+
+const loginController = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return next(new AppError("Please provide email and password!", 400));
+    }
+
+    const user = await User.findOne({ email }).select("+password");
+    console.log(user);
+
+    if (
+      user &&
+      (await user?.correctPassword(password, String(user.password)))
+    ) {
+      return createAndSendToken(user, 200, res);
+    }
+
+    return next(new AppError("Incorrect email or password!", 401));
+  },
+);
 
 // <------ REGISTER  ------->
 
-const registerController = async ({ body }: Request, res: Response) => {
-  try {
-    await bodyRequirer({ body, requiredValue: sign_up_required_values });
+// const registerController = async ({ body }: Request, res: Response) => {
+//   try {
+//     await bodyRequirer({ body, requiredValue: sign_up_required_values });
 
-    const hashed_password = await hashPassword(body.password);
+//     const hashed_password = await hashPassword(body.password);
 
-    const created_user = await UserModel.create({
-      password: body.password,
-      email: body.email,
-      username: body.username,
+//     const created_user = await UserModel.create({
+//       password: body.password,
+//       email: body.email,
+//       username: body.username,
+//     });
+
+//     createAndSendToken(created_user, 201, res);
+//   } catch (error) {
+//     return res.status(500).json(error);
+//   }
+// };
+
+const registerController = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email, username, password, passwordConfirm } = req.body;
+
+    const user = await unVerifiedUserModal.create({
+      email,
+      username,
+      password,
+      passwordConfirm,
     });
-
-    createAndSendToken(created_user, 201, res);
-  } catch (error) {
-    return res.status(500).json(error);
-  }
-};
-
+    res.send(user);
+  },
+);
 export { loginController, registerController };
