@@ -5,6 +5,7 @@ const modalaSlice = createSlice({
   initialState: {
     authModalVisibility: false,
     orderModalVisibility: false,
+    emailVerificationModalVisibility: false,
   },
   reducers: {
     switchAuthModalVisibility(state) {
@@ -13,9 +14,16 @@ const modalaSlice = createSlice({
     switchOrderModalVisibility(state) {
       state.orderModalVisibility = !state.orderModalVisibility;
     },
+    switchEmailVerificationModalVisibility(state) {
+      state.emailVerificationModalVisibility =
+        !state.emailVerificationModalVisibility;
+    },
   },
 });
 
-export const { switchAuthModalVisibility, switchOrderModalVisibility } =
-  modalaSlice.actions;
+export const {
+  switchAuthModalVisibility,
+  switchOrderModalVisibility,
+  switchEmailVerificationModalVisibility,
+} = modalaSlice.actions;
 export default modalaSlice.reducer;

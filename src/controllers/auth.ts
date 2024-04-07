@@ -2,16 +2,10 @@ import { CookieOptions, NextFunction, Request, Response } from "express";
 import User from "../models/userModel";
 import jwt from "../services/jwt";
 import { IUser } from "../types/userTypes";
-import { bodyRequirer } from "./body_require";
-import { password_incorrect, userNotFound } from "./messages";
-import { comparePassword, hashPassword } from "./password_controller";
-import {
-  sign_in_required_values,
-  sign_up_required_values,
-} from "./required_values";
 import catchAsync from "../utils/catchAsync";
 import AppError from "../utils/appError";
 import unVerifiedUserModal from "../models/unVerifiedUserModal";
+import { sendEmail } from "../utils/email";
 
 const createAndSendToken = (
   user: IUser,
@@ -33,9 +27,29 @@ const createAndSendToken = (
   };
   res.cookie("token", token, cookieOptions);
   user.password = undefined;
-  console.log(22);
+
   res.status(statusCode).json({ status: "success", token, data: { user } });
 };
+
+const verifyEmail = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return next(new AppError("There is no user with this email!", 404));
+    }
+    const emailVerificationCode = await user.createVerificationToken();
+    sendEmail({
+      email: "smax18760@gmail.com",
+      subject: "Verification code for email",
+      text: emailVerificationCode,
+    });
+
+    console.log(user);
+    res.send(emailVerificationCode);
+  },
+);
 
 // <------ Login  ------->
 
@@ -87,11 +101,7 @@ const loginController = catchAsync(
 
 // const registerController = async ({ body }: Request, res: Response) => {
 //   try {
-//     await bodyRequirer({ body, requiredValue: sign_up_required_values });
-
-//     const hashed_password = await hashPassword(body.password);
-
-//     const created_user = await UserModel.create({
+//     const created_user = await User.create({
 //       password: body.password,
 //       email: body.email,
 //       username: body.username,
@@ -104,9 +114,10 @@ const loginController = catchAsync(
 // };
 
 const registerController = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { email, username, password, passwordConfirm } = req.body;
+  async ({ body }: Request, res: Response, next: NextFunction) => {
+    console.log(body);
 
+    const { email, username, password, passwordConfirm } = body;
     const user = await unVerifiedUserModal.create({
       email,
       username,
@@ -116,4 +127,4 @@ const registerController = catchAsync(
     res.send(user);
   },
 );
-export { loginController, registerController };
+export { loginController, registerController, verifyEmail };

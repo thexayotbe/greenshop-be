@@ -81,3 +81,20 @@ userSchema.pre("save", async function (next) {
   this.passwordConfirm = undefined;
   next();
 });
+
+userSchema.methods.createVerificationToken = async function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  this.verificationToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  this.verificationExpireDate = Date.now() + 10 * 60 * 1000; //10 minutes
+
+  console.log("this in createVerificationToken", this);
+  console.log({ resetToken }, this.verificationToken);
+  return resetToken;
+};
+userSchema.index({ expireAt: 1 }, { expireAfterSeconds: 10 });
+export default mongoose.model<INotVerifiedUser>("userNotVerified", userSchema);

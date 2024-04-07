@@ -89,7 +89,6 @@ user_model.pre("save", async function (next) {
   if (this.password) {
     this.password = await bcrypt.hash(this.password, 12);
   }
-  // this.passwordConfirm = undefined;
   next();
 });
 

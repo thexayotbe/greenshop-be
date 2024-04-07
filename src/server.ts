@@ -5,16 +5,15 @@ import nodenv from "dotenv";
 import router from "./routes";
 import mongoose from "mongoose";
 import cookieSeccion from "cookie-session";
-import passport from "passport";
 import cookieParser from "cookie-parser";
 nodenv.config();
 
 const app: Application = express();
 
 // Middlewares
-app.use(router);
-app.use(express.urlencoded());
 app.use(express.json());
+
+app.use(router);
 
 app.use(
   cors({
@@ -37,9 +36,6 @@ app.use(
   }),
 );
 app.use(cookieParser(String(process.env.SECRET_KEY)));
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 app.listen(process.env.PORT, async () => {
   await mongoose.connect(

@@ -1,5 +1,5 @@
 import { CookieOptions, Request, Response, Router } from "express";
-import { user as UserModel } from "../models/userModel";
+import User from "../models/userModel";
 import jwt from "../services/jwt";
 import oauth from "../services/oauth";
 import { v4 as uuidv4 } from "uuid";
@@ -40,11 +40,11 @@ const callbackGoogle = async (req: Request, res: Response) => {
     res,
   });
 
-  let user = await UserModel.findOne({ email: googleUser.email });
+  let user = await User.findOne({ email: googleUser.email });
 
   if (!user) {
     const newPassword = uuidv4().slice(0, 8);
-    user = await UserModel.create({
+    user = await User.create({
       email: googleUser.email,
       username: googleUser.given_name,
       password: newPassword,
@@ -61,10 +61,10 @@ const facebookCallbackController = async (req: Request, res: Response) => {
   const { code } = req.query;
   const data: any = await oauth.facebookGetToken(String(code));
   const faceBookUser = await oauth.facebookGetUser(data.access_token, res);
-  let user = await UserModel.findOne({ email: faceBookUser.email });
+  let user = await User.findOne({ email: faceBookUser.email });
   if (!user) {
     const newPassword = uuidv4().slice(0, 8);
-    user = await UserModel.create({
+    user = await User.create({
       email: faceBookUser.email,
       username: faceBookUser.given_name,
       password: newPassword,

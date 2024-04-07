@@ -7,22 +7,12 @@ import facebook from "../../assets/icons/facebook-color.svg";
 import close from "../../assets/icons/close.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { switchAuthModalVisibility } from "../../redux/modalSlice";
-import axios from "axios";
 const AuthSection = () => {
   const dispatch = useDispatch();
   const [activeSection, setActiveSection] = useState("login");
   const { authModalVisibility } = useSelector((state) => state.modal);
   const authGoogle = () => {
     window.open("http://localhost:8080/auth/login/google", "_self");
-
-    // axios
-    //   .get("https://localhost:8080/auth/login/google")
-    //   .then((response) => {
-    //     console.log(response);
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error11:", error.message);
-    //   });
   };
   return (
     <Wrapper>

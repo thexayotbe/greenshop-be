@@ -2,24 +2,25 @@ import React, { useState } from "react";
 import { Wrapper } from "../Login/style";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { notification, Space, Input, Button } from "antd";
-import { switchAuthModalVisibility } from "../../../redux/modalSlice";
+import { notification } from "antd";
+import {
+  switchAuthModalVisibility,
+  switchEmailVerificationModalVisibility,
+} from "../../../redux/modalSlice";
 import { LoadingOutlined } from "@ant-design/icons";
 import axios from "axios";
 const SignIn = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [userData, setUserData] = useState({});
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const getUserDate = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
     setIsError(false);
   };
-  const getConfirmPasswword = (e) => {
-    setConfirmPassword(e.target.value);
-    setIsError(false);
+  const emailVerification = () => {
+    dispatch(switchEmailVerificationModalVisibility());
   };
   const openNotifications = (type) => {
     notification[type]({
@@ -34,12 +35,18 @@ const SignIn = () => {
   const addUserHandler = () => {
     setLoading(true);
     let dataStatus = Object.values(userData).every((value) => value);
-    if (userData.password === confirmPassword && dataStatus) {
+    console.log(userData);
+    if (dataStatus) {
       axios
-        .post(`http://localhost:8080/auth/register`, userData)
+        .post(`http://localhost:8080/auth/register`, userData, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
         .then((response) => {
           dispatch(switchAuthModalVisibility());
-          navigate("/home");
+          dispatch(switchEmailVerificationModalVisibility());
+          // navigate("/home");
           openNotifications("success");
           setLoading(false);
         })
@@ -53,9 +60,6 @@ const SignIn = () => {
       setIsError(true);
       openNotifications("error");
     }
-  };
-  const emailVerification = () => {
-    console.log(22);
   };
   return (
     <Wrapper>
@@ -77,20 +81,6 @@ const SignIn = () => {
         value={userData.email}
         error={isError ? "true" : undefined}
       />
-      {/* <Wrapper.Input
-        placeholder={"Email confirmation"}
-        autoComplete={"emai"}
-        name={"email"}
-        onChange={getUserDate}
-        value={userData.email}
-        error={isError ? "true" : undefined}
-      /> */}
-      <Space.Compact style={{ width: "100%" }}>
-        <Wrapper.Input placeholder="Email verification" />
-        <Wrapper.SendCode type="primary" onClick={emailVerification}>
-          Send Code
-        </Wrapper.SendCode>
-      </Space.Compact>
       <Wrapper.InputPassword
         placeholder={"Password"}
         autoComplete="current-password"
@@ -102,9 +92,9 @@ const SignIn = () => {
       <Wrapper.InputPassword
         placeholder={"Confirm Password"}
         autoComplete="current-password"
-        name={"confirmPassword"}
-        value={confirmPassword}
-        onChange={getConfirmPasswword}
+        name={"passwordConfirm"}
+        value={getUserDate.passwordConfirm}
+        onChange={getUserDate}
         error={isError ? "true" : undefined}
         onKeyDown={(e) =>
           (e.key === "Enter" || e.key === 13) && addUserHandler()
