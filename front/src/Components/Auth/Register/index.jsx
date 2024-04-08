@@ -72,7 +72,6 @@ const SignIn = () => {
         value={userData.username}
         error={isError ? "true" : undefined}
       />
-
       <Wrapper.Input
         placeholder={"Enter your email address"}
         autoComplete={"emai"}
