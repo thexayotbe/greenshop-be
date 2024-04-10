@@ -16,13 +16,15 @@ const router = Router();
 
 router.post("/login", loginController);
 router.post("/register", registerController);
-router.post("/verify-email", async (req, res) => {
-  await sendEmail(req.body);
-  res.status(200).json({
-    message: "success",
-    options: req.body,
-  });
-});
+// router.post("/verify-email", async (req, res) => {
+//   await sendEmail(req.body);
+//   res.status(200).json({
+//     message: "success",
+//     options: req.body,
+//   });
+// });
+
+router.post("/verify-email", verifyEmail);
 
 router.get("/login/google", loginGoogleController);
 router.get("/google/callback", callbackGoogle);

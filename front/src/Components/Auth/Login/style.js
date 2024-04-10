@@ -66,15 +66,15 @@ Wrapper.Button = styled.button`
   }
 `;
 Wrapper.SendCode = styled.button`
-  width: 200px;
-  height: 40px;
+  width: 80px;
+  height: 35px;
   border: 1px solid ${({ error }) => (error ? "red" : "#eaeaea")};
   border-radius: 0 5px 5px 0;
   background: #46a358;
   cursor: pointer;
   font-style: normal;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 10px;
   line-height: 16px;
   color: #ffffff;
   :hover {

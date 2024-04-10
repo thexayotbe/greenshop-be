@@ -9,9 +9,11 @@ import {
 } from "../../../redux/modalSlice";
 import { LoadingOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { Input, Space } from "antd";
 const SignIn = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [emailVerify, setEmailVerify] = useState(false);
   const [userData, setUserData] = useState({});
   const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -19,17 +21,21 @@ const SignIn = () => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
     setIsError(false);
   };
-  const emailVerification = () => {
-    dispatch(switchEmailVerificationModalVisibility());
-  };
+
   const openNotifications = (type) => {
     notification[type]({
       message: `${type === "success" ? "Success" : "Error"}`,
       description: `${
         type === "success"
-          ? "You Signed in successfullys"
+          ? "You Signed in successfully"
           : "Please cheack all inputs and passwords"
       }`,
+    });
+  };
+  const emailVerificationSend = (type) => {
+    notification[type]({
+      message: `success`,
+      description: `We have send code to your email`,
     });
   };
   const addUserHandler = () => {
@@ -44,10 +50,8 @@ const SignIn = () => {
           },
         })
         .then((response) => {
-          dispatch(switchAuthModalVisibility());
-          dispatch(switchEmailVerificationModalVisibility());
-          // navigate("/home");
-          openNotifications("success");
+          setEmailVerify(true);
+          emailVerificationSend("success");
           setLoading(false);
         })
         .catch((error) => {
@@ -60,6 +64,21 @@ const SignIn = () => {
       setIsError(true);
       openNotifications("error");
     }
+  };
+  const emailVerificationHandler = () => {
+    axios
+      .post("http://localhost:8080/auth/verify-email", userData)
+      .then((response) => {
+        // setEmailVerify(true);
+        // emailVerificationSend("success");
+        // setLoading(false);
+        openNotifications("success");
+      })
+      .catch((error) => {
+        console.log(error);
+        setLoading(false);
+        openNotifications("error");
+      });
   };
   return (
     <Wrapper>
@@ -99,6 +118,24 @@ const SignIn = () => {
           (e.key === "Enter" || e.key === 13) && addUserHandler()
         }
       />
+      {emailVerify && (
+        <Space direction="horizontal">
+          <Input.OTP
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              width: "210px",
+              height: "100px",
+            }}
+          />
+          <Wrapper.SendCode
+            style={{ width: 80, background: "#46a358" }}
+            onClick={emailVerificationHandler}
+          >
+            Send Code
+          </Wrapper.SendCode>
+        </Space>
+      )}
       <Wrapper.Button onClick={addUserHandler}>
         {loading ? <LoadingOutlined /> : "Register"}
       </Wrapper.Button>

@@ -6,6 +6,7 @@ import catchAsync from "../utils/catchAsync";
 import AppError from "../utils/appError";
 import unVerifiedUserModal from "../models/unVerifiedUserModal";
 import { sendEmail } from "../utils/email";
+import { generateRandomNumber } from "../utils/codeGenerator";
 
 const createAndSendToken = (
   user: IUser,
@@ -34,20 +35,24 @@ const createAndSendToken = (
 const verifyEmail = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email } = req.body;
-    const user = await User.findOne({ email });
+    console.log(22, email);
 
-    if (!user) {
-      return next(new AppError("There is no user with this email!", 404));
-    }
-    const emailVerificationCode = await user.createVerificationToken();
-    sendEmail({
-      email: "smax18760@gmail.com",
+    // const user = await User.findOne({ email });
+
+    // if (!user) {
+    //   return next(new AppError("There is no user with this email!", 404));
+    // }
+    // const emailVerificationCode = await user.createVerificationToken();
+    const verificationCode = generateRandomNumber(6);
+    await sendEmail({
+      email: email,
       subject: "Verification code for email",
-      text: emailVerificationCode,
+      text: verificationCode,
     });
-
-    console.log(user);
-    res.send(emailVerificationCode);
+    // console.log(user);
+    res.status(200).json({
+      message: "success",
+    });
   },
 );
 
@@ -124,6 +129,7 @@ const registerController = catchAsync(
       password,
       passwordConfirm,
     });
+
     res.send(user);
   },
 );

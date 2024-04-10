@@ -29,5 +29,4 @@ const sendEmail = async (options: {
     console.log(error);
   }
 };
-
 export { sendEmail };
