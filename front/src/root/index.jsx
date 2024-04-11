@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import Navbar from "../Components/Navbar";
 import Home from "../Components/Home";
 import Account from "../Components/Account";
+import Form from "../Components/Account/Location/Form";
 const Root = () => {
   return (
     <>
@@ -10,6 +11,7 @@ const Root = () => {
         <Route path="/" element={<Navbar />}>
           <Route path="/home" element={<Home />} />
           <Route path="/account" element={<Account />} />
+          <Route path="/account/location/:address" element={<Form />} />
         </Route>
       </Routes>
     </>

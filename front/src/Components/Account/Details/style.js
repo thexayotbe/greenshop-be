@@ -139,4 +139,23 @@ Wrapper.BtnRemove = styled.button`
     border: 1px solid #46a358;
   }
 `;
+Wrapper.Addresses = styled.div``;
+Wrapper.AddressItem = styled.div`
+  width: 900px;
+  height: 100px;
+  background: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #46a358;
+`;
+Wrapper.AddressTitle = styled.h3`
+  font-style: normal;
+  font-weight: 400;
+  font-size: 25px;
+  line-height: 15px;
+  color: #3d3d3d;
+  height: 15px;
+`;
+
 export { Wrapper };
