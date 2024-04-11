@@ -11,6 +11,7 @@ export interface INotVerifiedUser extends Types.ObjectId {
   active?: boolean;
   verificationExpireDate?: string;
   verificationToken?: string;
+  verificationCode: string;
   expireAt?: Date;
   createVerificationToken(): Promise<string>;
 }
@@ -34,7 +35,7 @@ const userSchema = new Schema<INotVerifiedUser>({
     required: [true, "Please provide us password!"],
     minLength: [8, "Password should have 8 characters!"],
     //select : false hides our password when we retrieve it
-    select: false,
+    // select: false,
   },
   passwordConfirm: {
     type: String,
@@ -52,6 +53,11 @@ const userSchema = new Schema<INotVerifiedUser>({
     select: false,
     required: false,
   },
+  verificationCode: {
+    type: String,
+    select: true,
+    required: false,
+  },
   verificationExpireDate: {
     type: String,
     select: false,
@@ -64,7 +70,7 @@ const userSchema = new Schema<INotVerifiedUser>({
   },
   expireAt: {
     type: Date,
-    default: new Date(),
+    default: new Date(Date.now() + 1000 * 60 * 5),
   },
 });
 
@@ -91,10 +97,6 @@ userSchema.methods.createVerificationToken = async function () {
     .digest("hex");
 
   this.verificationExpireDate = Date.now() + 10 * 60 * 1000; //10 minutes
-
-  console.log("this in createVerificationToken", this);
-  console.log({ resetToken }, this.verificationToken);
-  return resetToken;
 };
-userSchema.index({ expireAt: 1 }, { expireAfterSeconds: 10 });
+userSchema.index({ expireAt: 1 }, { expireAfterSeconds: 300 });
 export default mongoose.model<INotVerifiedUser>("userNotVerified", userSchema);

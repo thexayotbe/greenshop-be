@@ -1,5 +1,4 @@
-import { CookieOptions, NextFunction, Request, Response } from "express";
-import User from "../models/userModel";
+import { NextFunction, Request, Response } from "express";
 import jwt from "../services/jwt";
 import { IUser } from "../types/userTypes";
 import catchAsync from "../utils/catchAsync";
@@ -7,7 +6,9 @@ import AppError from "../utils/appError";
 import unVerifiedUserModal from "../models/unVerifiedUserModal";
 import { sendEmail } from "../utils/email";
 import { generateRandomNumber } from "../utils/codeGenerator";
+import userModel from "../models/userModel";
 
+// Utility function to create and send token
 const createAndSendToken = (
   user: IUser,
   statusCode: 200 | 201,
@@ -20,11 +21,10 @@ const createAndSendToken = (
   };
 
   const token = jwt.sign(tokenPayload);
-  const cookieOptions: CookieOptions = {
+  const cookieOptions = {
     httpOnly: true,
-    maxAge: 60 * 60 * 24 * 3,
+    maxAge: 60 * 60 * 24 * 3, // 3 days
     secure: true,
-    // signed: true,
   };
   res.cookie("token", token, cookieOptions);
   user.password = undefined;
@@ -32,64 +32,60 @@ const createAndSendToken = (
   res.status(statusCode).json({ status: "success", token, data: { user } });
 };
 
-const verifyEmail = catchAsync(
+// Controller to resend verification email
+const resendEmail = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email } = req.body;
-    console.log(22, email);
 
-    // const user = await User.findOne({ email });
-
-    // if (!user) {
-    //   return next(new AppError("There is no user with this email!", 404));
-    // }
-    // const emailVerificationCode = await user.createVerificationToken();
     const verificationCode = generateRandomNumber(6);
+
     await sendEmail({
       email: email,
       subject: "Verification code for email",
       text: verificationCode,
     });
-    // console.log(user);
+
+    await unVerifiedUserModal.findOneAndUpdate(
+      { email: email },
+      { verificationCode: verificationCode },
+    );
     res.status(200).json({
       message: "success",
     });
   },
 );
 
-// <------ Login  ------->
+// Controller to verify user
+const verifyUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email, userVerificationCode, passwordConfirm, password, username } =
+      req.body;
+    const user = await unVerifiedUserModal.findOne({ email });
 
-// const loginController = async (
-//   { body }: Request,
-//   res: Response,
-//   next: NextFunction,
-// ) => {
-//   const { email, password } = body;
-//   try {
-//     await bodyRequirer({ body, requiredValue: sign_in_required_values });
-//     const user = await UserModel.findOne({
-//       email: body.email,
-//     });
-//     console.log(user);
-//     // const pwCheck = await comparePassword(body.password, user.password);
-//     if (UserModel.length) res.status(401).json(userNotFound);
+    if (userVerificationCode == user?.verificationCode) {
+      const verifiedUser = await userModel.create({
+        username,
+        email,
+        password,
+        passwordConfirm,
+      });
+      createAndSendToken(verifiedUser, 201, res);
+    } else {
+      return next(new AppError("Verification code expired", 401));
+    }
+  },
+);
 
-//     // if (!pwCheck) res.status(401).json(password_incorrect);
-//     //
-//     return createAndSendToken(UserModel, 200, res);
-//   } catch (error) {
-//     res.status(500).json(error);
-//   }
-// };
-
+// Controller for user login
 const loginController = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
+
     if (!email || !password) {
       return next(new AppError("Please provide email and password!", 400));
     }
 
-    const user = await User.findOne({ email }).select("+password");
-    console.log(user);
+    const user = await userModel.findOne({ email }).select("+password");
 
     if (
       user &&
@@ -102,35 +98,29 @@ const loginController = catchAsync(
   },
 );
 
-// <------ REGISTER  ------->
-
-// const registerController = async ({ body }: Request, res: Response) => {
-//   try {
-//     const created_user = await User.create({
-//       password: body.password,
-//       email: body.email,
-//       username: body.username,
-//     });
-
-//     createAndSendToken(created_user, 201, res);
-//   } catch (error) {
-//     return res.status(500).json(error);
-//   }
-// };
-
+// Controller for user registration
 const registerController = catchAsync(
   async ({ body }: Request, res: Response, next: NextFunction) => {
-    console.log(body);
-
     const { email, username, password, passwordConfirm } = body;
-    const user = await unVerifiedUserModal.create({
+
+    const verificationCode = generateRandomNumber(6);
+
+    await unVerifiedUserModal.create({
       email,
       username,
       password,
       passwordConfirm,
+      verificationCode,
     });
 
-    res.send(user);
+    await sendEmail({
+      email: email,
+      subject: "Verification code for email",
+      text: verificationCode,
+    });
+
+    res.send({ message: "User registered successfully" });
   },
 );
-export { loginController, registerController, verifyEmail };
+
+export { loginController, registerController, verifyUser, resendEmail };

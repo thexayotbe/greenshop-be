@@ -2,7 +2,8 @@ import { Router } from "express";
 import {
   loginController,
   registerController,
-  verifyEmail,
+  resendEmail,
+  verifyUser,
 } from "../../controllers/auth";
 import {
   callbackGoogle,
@@ -16,15 +17,9 @@ const router = Router();
 
 router.post("/login", loginController);
 router.post("/register", registerController);
-// router.post("/verify-email", async (req, res) => {
-//   await sendEmail(req.body);
-//   res.status(200).json({
-//     message: "success",
-//     options: req.body,
-//   });
-// });
 
-router.post("/verify-email", verifyEmail);
+router.post("/verify-email", verifyUser);
+router.post("/resend-email", resendEmail);
 
 router.get("/login/google", loginGoogleController);
 router.get("/google/callback", callbackGoogle);

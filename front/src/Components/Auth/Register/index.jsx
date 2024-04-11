@@ -9,7 +9,7 @@ import {
 } from "../../../redux/modalSlice";
 import { LoadingOutlined } from "@ant-design/icons";
 import axios from "axios";
-import { Input, Space } from "antd";
+import { Space } from "antd";
 const SignIn = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -21,7 +21,9 @@ const SignIn = () => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
     setIsError(false);
   };
-
+  const getCode = (e) => {
+    setUserData({ ...userData, userVerificationCode: e });
+  };
   const openNotifications = (type) => {
     notification[type]({
       message: `${type === "success" ? "Success" : "Error"}`,
@@ -65,13 +67,14 @@ const SignIn = () => {
       openNotifications("error");
     }
   };
-  const emailVerificationHandler = () => {
+  const verifyUser = () => {
     axios
       .post("http://localhost:8080/auth/verify-email", userData)
       .then((response) => {
         // setEmailVerify(true);
         // emailVerificationSend("success");
-        // setLoading(false);
+        dispatch(switchAuthModalVisibility());
+        setLoading(false);
         openNotifications("success");
       })
       .catch((error) => {
@@ -80,6 +83,19 @@ const SignIn = () => {
         openNotifications("error");
       });
   };
+  const resendEmail = () => {
+    axios
+      .post("http://localhost:8080/auth/resend-email", userData)
+      .then((response) => {
+        emailVerificationSend("success");
+      })
+      .catch((error) => {
+        console.log(error);
+        setLoading(false);
+        openNotifications("error");
+      });
+  };
+
   return (
     <Wrapper>
       <Wrapper.Title>Enter your email and password to register.</Wrapper.Title>
@@ -120,23 +136,26 @@ const SignIn = () => {
       />
       {emailVerify && (
         <Space direction="horizontal">
-          <Input.OTP
+          <Wrapper.Input.OTP
             style={{
               display: "flex",
               justifyContent: "center",
               width: "210px",
               height: "100px",
             }}
+            name={"userVerificationCode"}
+            onChange={getCode}
+            value={getUserDate.userVerificationCode}
           />
           <Wrapper.SendCode
             style={{ width: 80, background: "#46a358" }}
-            onClick={emailVerificationHandler}
+            onClick={resendEmail}
           >
-            Send Code
+            Resend Code
           </Wrapper.SendCode>
         </Space>
       )}
-      <Wrapper.Button onClick={addUserHandler}>
+      <Wrapper.Button onClick={emailVerify ? verifyUser : addUserHandler}>
         {loading ? <LoadingOutlined /> : "Register"}
       </Wrapper.Button>
     </Wrapper>

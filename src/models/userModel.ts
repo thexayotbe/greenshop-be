@@ -59,7 +59,7 @@ const user_model = new Schema({
     select: false,
   },
   passwordConfirm: {
-    type: String,
+    type: String || undefined,
     required: [true, "Please confirm password!"],
     validate: {
       validator: function (this: IUser, val: String): boolean {
@@ -89,6 +89,7 @@ user_model.pre("save", async function (next) {
   if (this.password) {
     this.password = await bcrypt.hash(this.password, 12);
   }
+  this.passwordConfirm = "";
   next();
 });
 
