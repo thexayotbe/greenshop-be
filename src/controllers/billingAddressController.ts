@@ -5,7 +5,6 @@ import AppError from "../utils/appError";
 import billingAddressModel, {
   IBillingAddress,
 } from "../models/billingAddressModel";
-
 const postBillingAddressController = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -63,7 +62,6 @@ const updateAddressController = catchAsync(
       billingAddressId,
       req.body,
     );
-
     res.status(200).json({
       data: billingAddress,
       message: "Billing address has been updated successfully",
@@ -80,7 +78,6 @@ const getBillingAddressesController = catchAsync(
     if (!user) {
       throw new AppError("User not found", 404);
     }
-
     const billingAddresses = user.billingAddress;
     res.status(200).json({
       data: billingAddresses,
@@ -88,6 +85,7 @@ const getBillingAddressesController = catchAsync(
     });
   },
 );
+
 export {
   updateAddressController,
   getBillingAddressController,
