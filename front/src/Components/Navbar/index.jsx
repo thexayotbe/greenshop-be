@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Wrapper } from "./style";
+import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
 import { MenuOutlined } from "@ant-design/icons";
 import logo from "../../assets/icons/logoFull.svg";
 import shop from "../../assets/icons/shop.svg";
@@ -16,7 +17,8 @@ const Navbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [menuToggle, setMenuToggle] = useState(false);
-  const [isAuthed, setIsAuthed] = useState(false);
+  const isAuthenticated = useIsAuthenticated();
+
   return (
     <Container>
       <Wrapper>
@@ -28,7 +30,7 @@ const Navbar = () => {
             <Badge count={0}>
               <Wrapper.Icon src={shop} onClick={() => navigate("/shop-card")} />
             </Badge>
-            {isAuthed ? (
+            {isAuthenticated ? (
               <Wrapper.ProfileBtn onClick={() => navigate("/account")}>
                 <UserOutlined />
               </Wrapper.ProfileBtn>

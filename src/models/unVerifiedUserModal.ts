@@ -7,7 +7,7 @@ export interface INotVerifiedUser extends Types.ObjectId {
   email: string;
   username: string;
   password?: string;
-  passwordConfirm?: string;
+  passwordConfirm?: string | undefined;
   active?: boolean;
   verificationExpireDate?: string;
   verificationToken?: string;
@@ -98,5 +98,5 @@ userSchema.methods.createVerificationToken = async function () {
 
   this.verificationExpireDate = Date.now() + 10 * 60 * 1000; //10 minutes
 };
-userSchema.index({ expireAt: 1 }, { expireAfterSeconds: 300 });
+// userSchema.index({ expireAt: 1 }, { expireAfterSeconds: 300 });
 export default mongoose.model<INotVerifiedUser>("userNotVerified", userSchema);

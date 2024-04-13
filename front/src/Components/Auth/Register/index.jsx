@@ -3,16 +3,16 @@ import { Wrapper } from "../Login/style";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { notification } from "antd";
-import {
-  switchAuthModalVisibility,
-  switchEmailVerificationModalVisibility,
-} from "../../../redux/modalSlice";
+import useSignIn from "react-auth-kit/hooks/useSignIn";
+import { switchAuthModalVisibility } from "../../../redux/modalSlice";
 import { LoadingOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { Space } from "antd";
 const SignIn = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const signIn = useSignIn();
+
   const [emailVerify, setEmailVerify] = useState(false);
   const [userData, setUserData] = useState({});
   const [loading, setLoading] = useState(false);
@@ -70,12 +70,21 @@ const SignIn = () => {
   const verifyUser = () => {
     axios
       .post("http://localhost:8080/auth/verify-email", userData)
-      .then((response) => {
-        // setEmailVerify(true);
-        // emailVerificationSend("success");
+      .then(({ data }) => {
+        console.log(data);
         dispatch(switchAuthModalVisibility());
         setLoading(false);
         openNotifications("success");
+        console.log(data.data.user);
+        console.log(data.data);
+        signIn({
+          auth: {
+            token: data.token,
+            type: "Bearer",
+          },
+          expiresIn: 60 * 60 * 3,
+          userState: { ...data.data.user },
+        });
       })
       .catch((error) => {
         console.log(error);

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Wrapper } from "./style";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import useSignIn from "react-auth-kit/hooks/useSignIn";
 import { switchAuthModalVisibility } from "../../../redux/modalSlice";
 import { notification } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
@@ -9,6 +10,7 @@ import axios from "axios";
 const LogIn = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const signIn = useSignIn();
   const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [userData, setUserData] = useState({
@@ -36,11 +38,19 @@ const LogIn = () => {
     if (userData.email && userData.password) {
       axios
         .post(`http://localhost:8080/auth/login`, userData)
-        .then((response) => {
+        .then(({ data }) => {
           dispatch(switchAuthModalVisibility());
           navigate("/home");
           openNotifications("success");
           setLoading(false);
+          signIn({
+            auth: {
+              token: data.token,
+              type: "Bearer",
+            },
+            expiresIn: 60 * 60 * 3,
+            userState: { ...data.data.user },
+          });
         })
         .catch((error) => {
           console.log(error);

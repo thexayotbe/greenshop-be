@@ -61,7 +61,7 @@ const verifyUser = catchAsync(
     const { email, userVerificationCode, passwordConfirm, password, username } =
       req.body;
     const user = await unVerifiedUserModal.findOne({ email });
-
+    console.log(userVerificationCode, user?.verificationCode);
     if (userVerificationCode == user?.verificationCode) {
       const verifiedUser = await userModel.create({
         username,
@@ -119,7 +119,7 @@ const registerController = catchAsync(
       text: verificationCode,
     });
 
-    res.send({ message: "User registered successfully" });
+    res.send({ message: "We have send verification code" });
   },
 );
 
