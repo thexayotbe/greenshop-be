@@ -1,8 +1,24 @@
 import { Router } from "express";
+import {
+  deleteBillingAddressController,
+  getBillingAddressController,
+  getBillingAddressesController,
+  postBillingAddressController,
+  updateAddressController,
+} from "../../controllers/billingAddressController";
 
 const router = Router();
 
-router.post("/create");
-router.post("/get-addreess");
+//  GET METHODS
+router.get("/get-addresses/:id", getBillingAddressesController);
+router.get("/get-address/:id/:billingAddressId", getBillingAddressController);
 
-export { router };
+//  POST METHODS
+
+router.post("/create/:id", postBillingAddressController);
+router.post("/update/:id/:billingAddressId", updateAddressController);
+
+//  DELETE METHODS
+
+router.delete("/delete/:id/:billingAddressId", deleteBillingAddressController);
+export default router;

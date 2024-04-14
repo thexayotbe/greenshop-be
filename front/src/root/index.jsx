@@ -11,7 +11,11 @@ const Root = () => {
         <Route path="/" element={<Navbar />}>
           <Route path="/home" element={<Home />} />
           <Route path="/account" element={<Account />} />
-          <Route path="/account/location/:address" element={<Form />} />
+          <Route
+            path="/account/location/:billingAddressId"
+            element={<Form />}
+          />
+          <Route path="/account/location/create" element={<Form />} />
         </Route>
       </Routes>
     </>

@@ -6,7 +6,8 @@ const Button = ({ widthBtn, children, heightBtn, margin, onClickFunc }) => {
       onClick={onClickFunc}
       margin={margin}
       widthBtn={widthBtn}
-      heightBtn={heightBtn}>
+      heightBtn={heightBtn}
+    >
       {children}
     </Wrapper>
   );

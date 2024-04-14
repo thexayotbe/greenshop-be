@@ -1,6 +1,5 @@
 import { Image, Input, Select } from "antd";
 import styled from "styled-components";
-import foto from "../../../assets/icons/photo.svg";
 const Wrapper = styled.div`
   .ant-input-affix-wrapper:hover {
     border: 1px solid #46a358;
@@ -156,6 +155,12 @@ Wrapper.AddressTitle = styled.h3`
   line-height: 15px;
   color: #3d3d3d;
   height: 15px;
+`;
+Wrapper.Buttons = styled.div`
+  display: flex;
+  font-size: 25px;
+  gap: 20px;
+  cursor: pointer;
 `;
 
 export { Wrapper };

@@ -5,11 +5,14 @@ import AppError from "../utils/appError";
 import billingAddressModel, {
   IBillingAddress,
 } from "../models/billingAddressModel";
+
 const postBillingAddressController = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.params;
-    const billingAddress = await billingAddressModel.create(req.body);
-
+    const createdBillingAddress = await billingAddressModel.create(req.body);
+    const billingAddress = await billingAddressModel.findOne({
+      _id: createdBillingAddress._id,
+    });
     const user = await User.findById<IUser>(id);
     await User.findByIdAndUpdate<IUser>(id, {
       billingAddress: [
@@ -72,7 +75,7 @@ const updateAddressController = catchAsync(
 
 const getBillingAddressesController = catchAsync(
   async (req: Request, res: Response) => {
-    const { id, billingAddressId } = req.params;
+    const { id } = req.params;
 
     const user = await User.findById(id).populate("billingAddress");
     if (!user) {

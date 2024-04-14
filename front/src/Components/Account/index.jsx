@@ -14,7 +14,6 @@ import { useDispatch } from "react-redux";
 // import { logOut } from "../../redux/userSlice";
 import { useNavigate } from "react-router-dom";
 const Account = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const sections = [<Details />, <Products />, <Location />, <Wishlist />];
   const [activeSection, setActivePage] = useState(0);
