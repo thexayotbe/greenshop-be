@@ -1,4 +1,6 @@
+import HomeCarousel from "../HomeCarousel";
+
 const Home = () => {
-  return <h1>Welcome to greenshop</h1>;
+  return <HomeCarousel />;
 };
 export default Home;
