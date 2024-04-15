@@ -87,14 +87,16 @@ const loginController = catchAsync(
 
     const user = await userModel.findOne({ email }).select("+password");
     console.log(password, user?.password);
-    if (user && password === user.password) {
+    if (
+      user &&
+      (await user?.correctPassword(password, String(user.password)))
+    ) {
       return createAndSendToken(user, 200, res);
     }
 
     return next(new AppError("Incorrect email or password!", 401));
   },
 );
-//   (await user?.correctPassword(password, String(user.password)))
 // Controller for user registration
 const registerController = catchAsync(
   async ({ body }: Request, res: Response, next: NextFunction) => {

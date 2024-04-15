@@ -49,7 +49,7 @@ const LogIn = () => {
               type: "Bearer",
             },
             expiresIn: 60 * 60 * 3,
-            userState: { ...data.data.user },
+            userState: { _id: data.data.user._id },
           });
         })
         .catch((error) => {
