@@ -10,15 +10,16 @@ import Location from "./Location";
 import Wishlist from "./Wishlist";
 import Products from "./Products";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-// import { logOut } from "../../redux/userSlice";
+import useSignOut from "react-auth-kit/hooks/useSignOut";
 import { useNavigate } from "react-router-dom";
 const Account = () => {
   const navigate = useNavigate();
+  const signOut = useSignOut();
+
   const sections = [<Details />, <Products />, <Location />, <Wishlist />];
   const [activeSection, setActivePage] = useState(0);
   const logOutHandler = () => {
-    // dispatch(logOut());
+    signOut();
     navigate("/");
   };
   return (

@@ -2,26 +2,44 @@ import { Request, Response } from "express";
 import User from "../models/userModel";
 import catchAsync from "../utils/catchAsync";
 import AppError from "../utils/appError";
-
-const checkPassword = async (user: any, password: string, target: string) => {
+import bcrypt from "bcrypt";
+const checkPassword = async (
+  user: any,
+  password: string,
+  target: string,
+  newPassword: string,
+  confirmPassword: string,
+) => {
   console.log(password, target);
-  return await user?.correctPassword(password, String(target));
+  return (
+    (await user?.correctPassword(password, String(target))) &&
+    newPassword === confirmPassword
+  );
 };
 
 const updateUser = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const { firstName, lastName, userName, password, email, phoneNumber } =
     req.body;
-  const user = await User.findById(id, req.body).select("+password");
+  const user = await User.findById(id).select("+password");
+
   if (user) {
-    if (!req.body.password) {
-      await User.findByIdAndUpdate(id);
+    if (!Object.keys(req.body.password).length) {
+      await User.findByIdAndUpdate(id, {
+        firstName,
+        lastName,
+        userName,
+        email,
+        phoneNumber,
+      });
     } else {
       if (
         await checkPassword(
           user,
           password.currentPassword,
           String(user.password),
+          password.newPassword,
+          password.passwordConfirm,
         )
       ) {
         await User.findByIdAndUpdate(id, {
@@ -30,8 +48,8 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
           userName,
           email,
           phoneNumber,
-          password: password.newPassword,
-          passwordConfirm: password.passwordConfirm,
+          password: await bcrypt.hash(password.newPassword, 12),
+          passwordConfirm: undefined,
         });
       } else {
         throw new AppError("Password didn`t match", 400);

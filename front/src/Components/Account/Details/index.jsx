@@ -1,9 +1,13 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Wrapper } from "./style";
 import Button from "../../Generic/Button";
 import foto from "../../../assets/icons/photo.svg";
-
+import useAuthUser from "react-auth-kit/hooks/useAuthUser";
+import axios from "axios";
 const Details = () => {
+  const { _id } = useAuthUser();
+  const [userData, setUserData] = useState({});
+  const [passwordData, setPasswordData] = useState({});
   const [preview, setPreview] = useState(null);
   const inputRef = useRef(null);
 
@@ -21,6 +25,35 @@ const Details = () => {
   const handleLabelClick = () => {
     inputRef.current.click();
   };
+  const getUserData = (e) => {
+    setUserData((previesData) => ({
+      ...previesData,
+      [e.target.name]: e.target.value,
+    }));
+  };
+  const getPasswordData = (e) => {
+    setPasswordData((previesData) => ({
+      ...previesData,
+      [e.target.name]: e.target.value,
+    }));
+  };
+  useEffect(() => {
+    axios.get(`http://localhost:8080/user/get/${_id}`).then(({ data }) => {
+      setUserData(data.data);
+    });
+  }, []);
+
+  const updateUser = () => {
+    axios
+      .post(`http://localhost:8080/user/update/${_id}`, {
+        ...userData,
+        password: passwordData,
+      })
+      .then((response) => {
+        console.log(response);
+      });
+  };
+
   return (
     <Wrapper>
       <Wrapper.Title>Personal Information</Wrapper.Title>
@@ -30,21 +63,33 @@ const Details = () => {
             First Name
             <Wrapper.Require>*</Wrapper.Require>
           </Wrapper.Label>
-          <Wrapper.Input />
+          <Wrapper.Input
+            value={userData.firstName}
+            name="firstName"
+            onChange={getUserData}
+          />
         </Wrapper.Item>
         <Wrapper.Item>
           <Wrapper.Label>
             Last Name
             <Wrapper.Require>*</Wrapper.Require>
           </Wrapper.Label>
-          <Wrapper.Input />
+          <Wrapper.Input
+            value={userData.lastName}
+            name="lastName"
+            onChange={getUserData}
+          />
         </Wrapper.Item>
         <Wrapper.Item>
           <Wrapper.Label>
             Email address
             <Wrapper.Require>*</Wrapper.Require>
           </Wrapper.Label>
-          <Wrapper.Input />
+          <Wrapper.Input
+            value={userData.email}
+            name="email"
+            onChange={getUserData}
+          />
         </Wrapper.Item>
         <Wrapper.Item>
           <Wrapper.Label>
@@ -65,7 +110,11 @@ const Details = () => {
               ]}
               s
             />
-            <Wrapper.Input />
+            <Wrapper.Input
+              value={userData.phoneNumber}
+              name="phoneNumber"
+              onChange={getUserData}
+            />
           </Wrapper.SelectWr>
         </Wrapper.Item>
         <Wrapper.Item>
@@ -73,7 +122,11 @@ const Details = () => {
             Username
             <Wrapper.Require>*</Wrapper.Require>
           </Wrapper.Label>
-          <Wrapper.Input />
+          <Wrapper.Input
+            value={userData.username}
+            name="username"
+            onChange={getUserData}
+          />
         </Wrapper.Item>
         <Wrapper.Item>
           <Wrapper.Label>
@@ -107,18 +160,30 @@ const Details = () => {
       <Wrapper.Form column>
         <Wrapper.Item>
           <Wrapper.Label>Current password</Wrapper.Label>
-          <Wrapper.Password />
+          <Wrapper.Password
+            value={passwordData.currentPassword}
+            name="currentPassword"
+            onChange={getPasswordData}
+          />
         </Wrapper.Item>
         <Wrapper.Item>
           <Wrapper.Label>New password</Wrapper.Label>
-          <Wrapper.Password />
+          <Wrapper.Password
+            value={passwordData.newPassword}
+            name="newPassword"
+            onChange={getPasswordData}
+          />
         </Wrapper.Item>
         <Wrapper.Item>
           <Wrapper.Label>Confirm new password</Wrapper.Label>
-          <Wrapper.Password />
+          <Wrapper.Password
+            value={passwordData.passwordConfirm}
+            name="passwordConfirm"
+            onChange={getPasswordData}
+          />
         </Wrapper.Item>
       </Wrapper.Form>
-      <Button widthBtn={"131px"} heightBtn={"40px"}>
+      <Button widthBtn={"131px"} heightBtn={"40px"} onClickFunc={updateUser}>
         Save Change
       </Button>
     </Wrapper>
