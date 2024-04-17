@@ -1,5 +1,6 @@
 import mongoose, { Schema, Types } from "mongoose";
-
+import { user_db } from "../config/db";
+// import { user_db } from "../config/db";
 export interface IBillingAddress {
   firstName: string;
   lastName: string;
@@ -63,7 +64,7 @@ const billingAddressSchema = new Schema<IBillingAddress>({
     trim: true,
   },
 });
-export default mongoose.model<IBillingAddress>(
+export default user_db.model<IBillingAddress>(
   "billingAddress",
   billingAddressSchema,
 );

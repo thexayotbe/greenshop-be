@@ -2,6 +2,7 @@ import mongoose, { Schema, Types } from "mongoose";
 import validator from "validator";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
+import { user_db } from "../config/db";
 
 export interface INotVerifiedUser extends Types.ObjectId {
   email: string;
@@ -42,7 +43,7 @@ const userSchema = new Schema<INotVerifiedUser>({
     required: [true, "Please confirm password!"],
     validate: {
       validator: function (this: INotVerifiedUser, val: string): boolean {
-        // this works only on CREATE and SAVE!!!
+        // this works only on CREATE and SAVE!!
         return val === this.password;
       },
       message: "Passwords are not same!",
@@ -99,4 +100,4 @@ userSchema.methods.createVerificationToken = async function () {
   this.verificationExpireDate = Date.now() + 10 * 60 * 1000; //10 minutes
 };
 // userSchema.index({ expireAt: 1 }, { expireAfterSeconds: 300 });
-export default mongoose.model<INotVerifiedUser>("userNotVerified", userSchema);
+export default user_db.model<INotVerifiedUser>("userNotVerified", userSchema);

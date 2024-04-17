@@ -3,6 +3,8 @@ import validator from "validator";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
 import { IBillingAddress } from "./billingAddressModel";
+import { user_db } from "../config/db";
+
 export interface IUser extends Types.ObjectId {
   email: string;
   username: string;
@@ -117,4 +119,4 @@ user_model.methods.createVerificationToken = async function () {
   return resetToken;
 };
 
-export default mongoose.model<IUser>("user", user_model);
+export default user_db.model<IUser>("user", user_model);

@@ -10,7 +10,6 @@ const checkPassword = async (
   newPassword: string,
   confirmPassword: string,
 ) => {
-  console.log(password, target);
   return (
     (await user?.correctPassword(password, String(target))) &&
     newPassword === confirmPassword
