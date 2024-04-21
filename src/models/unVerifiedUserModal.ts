@@ -43,7 +43,7 @@ const userSchema = new Schema<INotVerifiedUser>({
     required: [true, "Please confirm password!"],
     validate: {
       validator: function (this: INotVerifiedUser, val: string): boolean {
-        // this works only on CREATE and SAVE!
+        // this works only on CREATE and SAVE!!!
         return val === this.password;
       },
       message: "Passwords are not same!",
