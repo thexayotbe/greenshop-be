@@ -74,7 +74,6 @@ const userSchema = new Schema<INotVerifiedUser>({
     default: new Date(Date.now() + 1000 * 60 * 5),
   },
 });
-
 userSchema.pre("save", async function (next) {
   console.log("pre-save");
   if (!this.isModified("password")) return next();
